@@ -14,9 +14,14 @@ public class ScreenActivity extends Activity {
         mScreenSwitcher = new ScreenSwitcher(this);
     }
 
-    public void switchScreen(ScreenFragment screenFragment) {
-        mScreenSwitcher.switchScreen(screenFragment);
+    public void pushScreen(ScreenFragment screenFragment) {
+        mScreenSwitcher.pushScreen(screenFragment);
     }
+
+    public void pushScreen(ScreenFragment screenFragment, boolean clearBackStack, boolean addToBackStack) {
+        mScreenSwitcher.pushScreen(screenFragment, clearBackStack, addToBackStack);
+    }
+
 
     public ScreenSwitcher getScreenSwitcher() {
         return mScreenSwitcher;

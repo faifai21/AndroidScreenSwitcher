@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.github.androidscreenswitcher.ScreenFragment;
-import com.github.androidscreenswitcher.demo.MainActivity;
 import com.github.androidscreenswitcher.demo.R;
 
 public class HomeFragment extends ScreenFragment {
@@ -29,7 +28,7 @@ public class HomeFragment extends ScreenFragment {
         view.findViewById(R.id.replace).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getScreenSwitcher().switchScreen(TextFragment.newInstance("Test"));
+                getScreenSwitcher().pushScreen(TextFragment.newInstance("Test"));
             }
         });
     }
