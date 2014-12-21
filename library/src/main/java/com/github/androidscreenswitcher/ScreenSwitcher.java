@@ -25,11 +25,19 @@ public class ScreenSwitcher {
         mContainerID = containerID;
     }
 
-    public void pushScreen(ScreenFragment screenFragment) {
-        pushScreen(screenFragment, false, true);
+    public void switchScreen(ScreenFragment screenFragment) {
+        changeScreen(screenFragment, false, false);
     }
 
-    protected void pushScreen(ScreenFragment fragment, boolean clearBackStack, boolean addToBackStack) {
+    public void switchScreen(ScreenFragment screenFragment, boolean clearBackStack) {
+        changeScreen(screenFragment, clearBackStack, false);
+    }
+
+    public void pushScreen(ScreenFragment screenFragment) {
+        changeScreen(screenFragment, false, true);
+    }
+
+    protected void changeScreen(ScreenFragment fragment, boolean clearBackStack, boolean addToBackStack) {
         if (clearBackStack) {
             clearBackStack();
         }

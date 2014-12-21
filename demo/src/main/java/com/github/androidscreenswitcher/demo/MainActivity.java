@@ -14,7 +14,7 @@ public class MainActivity extends ScreenActivity {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            pushScreen(HomeFragment.newInstance(), false, false);
+            switchScreen(HomeFragment.newInstance());
         }
     }
 
