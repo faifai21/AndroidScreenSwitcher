@@ -1,27 +1,32 @@
 package com.github.androidscreenswitcher;
 
-import android.app.Activity;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.content.Intent;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.ActionBarActivity;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class ScreenSwitcher {
 
     private final FragmentManager mFragmentManager;
     private final int mContainerID;
-    private OnScreenSwitchListener mOnScreenSwitchListener;
+    private List<OnScreenSwitchListener> mOnScreenSwitchListeners = new ArrayList<>();
 
     public static interface OnScreenSwitchListener {
         public void onScreenSwitched(ScreenFragment screenFragment);
     }
 
-    public ScreenSwitcher(Activity activity) {
+    public ScreenSwitcher(ActionBarActivity activity) {
         this(activity, R.id.screens_container);
     }
 
-    public ScreenSwitcher(Activity activity, int containerID) {
-        mFragmentManager = activity.getFragmentManager();
+    public ScreenSwitcher(ActionBarActivity activity, int containerID) {
+        mFragmentManager = activity.getSupportFragmentManager();
         mContainerID = containerID;
     }
 
@@ -49,9 +54,7 @@ public class ScreenSwitcher {
             transaction.addToBackStack(tag);
         }
 
-        if (mOnScreenSwitchListener != null) {
-            mOnScreenSwitchListener.onScreenSwitched(fragment);
-        }
+        notifyFragmentSwitch(fragment);
 
         transaction.replace(mContainerID, fragment, tag);
 
@@ -64,7 +67,30 @@ public class ScreenSwitcher {
         }
     }
 
-    public void setOnScreenSwitchListener(OnScreenSwitchListener onScreenSwitchListener) {
-        mOnScreenSwitchListener = onScreenSwitchListener;
+    public Fragment getVisibleFragment() {
+        FragmentManager fragmentManager = mFragmentManager;
+        List<Fragment> fragments = fragmentManager.getFragments();
+        for (Fragment fragment : fragments) {
+            if (fragment != null && fragment.isVisible())
+                return fragment;
+        }
+        return null;
+    }
+
+    public void addOnScreenSwitchListener(OnScreenSwitchListener onScreenSwitchListener) {
+        mOnScreenSwitchListeners.add(onScreenSwitchListener);
+    }
+
+    public void onBackPressed() {
+        Fragment fragment = getVisibleFragment();
+        if (fragment != null && fragment instanceof ScreenFragment) {
+            notifyFragmentSwitch((ScreenFragment) fragment);
+        }
+    }
+
+    private void notifyFragmentSwitch(ScreenFragment screenFragment) {
+        for (OnScreenSwitchListener onScreenSwitchListener : mOnScreenSwitchListeners) {
+            onScreenSwitchListener.onScreenSwitched(screenFragment);
+        }
     }
 }

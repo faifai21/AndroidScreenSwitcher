@@ -1,8 +1,9 @@
 package com.github.androidscreenswitcher;
 
-import android.app.Fragment;
+import android.content.Context;
+import android.support.v4.app.Fragment;
 
-public class ScreenFragment extends Fragment {
+public abstract class ScreenFragment extends Fragment {
 
     public ScreenActivity getScreenActivity() {
         return (ScreenActivity) getActivity();
@@ -10,6 +11,10 @@ public class ScreenFragment extends Fragment {
 
     public ScreenSwitcher getScreenSwitcher() {
         return getScreenActivity().getScreenSwitcher();
+    }
+
+    public String getTitle(Context context) {
+        return null;
     }
 
 }

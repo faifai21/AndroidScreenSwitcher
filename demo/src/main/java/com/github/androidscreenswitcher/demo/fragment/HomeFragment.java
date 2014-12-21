@@ -1,5 +1,6 @@
 package com.github.androidscreenswitcher.demo.fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -33,4 +34,8 @@ public class HomeFragment extends ScreenFragment {
         });
     }
 
+    @Override
+    public String getTitle(Context context) {
+        return context.getString(R.string.app_name);
+    }
 }

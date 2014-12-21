@@ -1,5 +1,6 @@
 package com.github.androidscreenswitcher.demo.fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -38,5 +39,10 @@ public class TextFragment extends ScreenFragment {
         TextView text = (TextView) view.findViewById(R.id.text);
 
         text.setText(paramText);
+    }
+
+    @Override
+    public String getTitle(Context context) {
+        return getArguments().getString(PARAM_TEXT);
     }
 }
