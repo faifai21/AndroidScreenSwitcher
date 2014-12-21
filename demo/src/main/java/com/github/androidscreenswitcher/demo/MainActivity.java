@@ -5,13 +5,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.github.androidscreenswitcher.ScreenActivity;
+import com.github.androidscreenswitcher.demo.fragment.HomeFragment;
 
 public class MainActivity extends ScreenActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+
+        if (savedInstanceState == null) {
+            switchScreen(HomeFragment.newInstance());
+        }
     }
 
     @Override
