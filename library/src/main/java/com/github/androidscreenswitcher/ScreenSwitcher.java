@@ -48,6 +48,7 @@ public class ScreenSwitcher {
         }
 
         FragmentTransaction transaction = mFragmentManager.beginTransaction();
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         String tag = UUID.randomUUID().toString();
 
         if (addToBackStack) {
