@@ -1,10 +1,11 @@
 package com.github.androidscreenswitcher;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
 
-public class ScreenActivity extends ActionBarActivity implements ScreenSwitcher.OnScreenSwitchListener {
+public abstract class ScreenActivity extends ActionBarActivity implements ScreenSwitcher.OnScreenSwitchListener {
 
     private static final String SAVE_STATE_TITLE = "ScreenActivity.SAVE_STATE_TITLE";
 
@@ -18,24 +19,53 @@ public class ScreenActivity extends ActionBarActivity implements ScreenSwitcher.
             setTitle(savedInstanceState.getCharSequence(SAVE_STATE_TITLE));
         }
 
-        mScreenSwitcher = new ScreenSwitcher(this);
+        mScreenSwitcher = new ScreenSwitcher(this, getContainerId());
         mScreenSwitcher.addOnScreenSwitchListener(this);
     }
 
+    public abstract int getContainerId();
+
     public void switchScreen(ScreenFragment screenFragment) {
-        mScreenSwitcher.changeScreen(screenFragment, false, false);
+        switchScreen(screenFragment, false, false);
     }
 
     public void switchScreen(ScreenFragment screenFragment, boolean clearBackStack) {
-        mScreenSwitcher.changeScreen(screenFragment, clearBackStack, false);
+        switchScreen(screenFragment, clearBackStack, false);
+    }
+
+    public void switchScreen(ScreenFragment screenFragment, boolean clearBackStack, boolean addToBackStack) {
+        switchScreen(screenFragment, clearBackStack, addToBackStack, false);
     }
 
     public void pushScreen(ScreenFragment screenFragment) {
-        mScreenSwitcher.pushScreen(screenFragment);
+        pushScreen(screenFragment, false);
     }
 
-    public void pushScreen(ScreenFragment screenFragment, boolean clearBackStack, boolean addToBackStack) {
-        mScreenSwitcher.changeScreen(screenFragment, clearBackStack, addToBackStack);
+    public void pushScreen(ScreenFragment screenFragment, boolean isCheckpoint) {
+        switchScreen(screenFragment, false, true, isCheckpoint);
+    }
+
+    public void switchScreen(ScreenFragment screenFragment, boolean clearBackStack, boolean addToBackStack, boolean isCheckpoint) {
+        mScreenSwitcher.addToStack(addToBackStack)
+                .clearStack(clearBackStack)
+                .isCheckpoint(isCheckpoint)
+                .commit(screenFragment);
+    }
+
+    public boolean popTillCheckpoint(){
+        return mScreenSwitcher.popTillCheckpoint();
+    }
+
+    public void pop(int count){
+        mScreenSwitcher.pop(count);
+    }
+
+    public void pop(){
+        mScreenSwitcher.pop();
+    }
+
+    protected Fragment getVisibleFragment(){
+        return mScreenSwitcher.getVisibleFragment();
     }
 
     public ScreenSwitcher getScreenSwitcher() {
@@ -49,7 +79,11 @@ public class ScreenActivity extends ActionBarActivity implements ScreenSwitcher.
         if (!TextUtils.isEmpty(title)) {
             setTitle(title);
         }
+        else
+            setTitle(getDefaultTitle());
     }
+
+    public abstract String getDefaultTitle();
 
     @Override
     public void onBackPressed() {

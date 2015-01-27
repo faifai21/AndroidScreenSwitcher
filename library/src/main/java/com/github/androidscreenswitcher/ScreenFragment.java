@@ -25,7 +25,7 @@ public abstract class ScreenFragment extends Fragment {
         return null;
     }
 
-    public int getLayoutResource() {
+    protected int getLayoutResource() {
         return 0;
     }
 
