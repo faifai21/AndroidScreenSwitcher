@@ -105,19 +105,16 @@ public class ScreenSwitcher implements FragmentManager.OnBackStackChangedListene
 
     private boolean popToTag(String tag){
         boolean success = mFragmentManager.popBackStackImmediate(tag, 0);
-        Fragment visible = getVisibleFragment();
-        if(visible instanceof ScreenFragment)
-            notifyFragmentSwitch((ScreenFragment) visible);
+        newVisibleFragment();
         return success;
     }
 
     private boolean popToId(int id){
         boolean success = mFragmentManager.popBackStackImmediate(id, 0);
-        Fragment visible = getVisibleFragment();
-        if(visible instanceof ScreenFragment)
-            notifyFragmentSwitch((ScreenFragment) visible);
+        newVisibleFragment();
         return success;
     }
+
     public void clearCheckpoints(){
         mCheckPoints.clear();
     }
@@ -144,10 +141,14 @@ public class ScreenSwitcher implements FragmentManager.OnBackStackChangedListene
             Log.w("ScreenSwitcher", "Fragment backstack is empty; nothing to pop");
         else {
             mFragmentManager.popBackStackImmediate();
-            Fragment visible = getVisibleFragment();
-            if(visible instanceof ScreenFragment)
-                notifyFragmentSwitch((ScreenFragment) visible);
+            newVisibleFragment();
         }
+    }
+
+    private void newVisibleFragment(){
+        Fragment visible = getVisibleFragment();
+        if(visible != null && visible instanceof ScreenFragment)
+            notifyFragmentSwitch((ScreenFragment) visible);
     }
 
     public void clearBackStack() {
@@ -172,10 +173,7 @@ public class ScreenSwitcher implements FragmentManager.OnBackStackChangedListene
     }
 
     public void onBackPressed() {
-        Fragment fragment = getVisibleFragment();
-        if (fragment != null && fragment instanceof ScreenFragment) {
-            notifyFragmentSwitch((ScreenFragment) fragment);
-        }
+        newVisibleFragment();
     }
 
     /**
