@@ -4,6 +4,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -98,15 +99,25 @@ public class ScreenSwitcher implements FragmentManager.OnBackStackChangedListene
         }
         else{
             final String checkpointTag = mCheckPoints.peek();
-            mFragmentManager.popBackStackImmediate(checkpointTag, 0);
-            Fragment visible = getVisibleFragment();
-            if(visible instanceof ScreenFragment)
-                notifyFragmentSwitch((ScreenFragment) visible);
-            return true;
+            return popToTag(checkpointTag);
         }
     }
 
+    private boolean popToTag(String tag){
+        boolean success = mFragmentManager.popBackStackImmediate(tag, 0);
+        Fragment visible = getVisibleFragment();
+        if(visible instanceof ScreenFragment)
+            notifyFragmentSwitch((ScreenFragment) visible);
+        return success;
+    }
 
+    private boolean popToId(int id){
+        boolean success = mFragmentManager.popBackStackImmediate(id, 0);
+        Fragment visible = getVisibleFragment();
+        if(visible instanceof ScreenFragment)
+            notifyFragmentSwitch((ScreenFragment) visible);
+        return success;
+    }
     public void clearCheckpoints(){
         mCheckPoints.clear();
     }
@@ -116,8 +127,13 @@ public class ScreenSwitcher implements FragmentManager.OnBackStackChangedListene
      * @param count the number of screens to pop
      */
     public void pop(int count){
-        for(int i = 0; i < count; i++)
-            pop();
+        final int backstackPositionToGoTo = mFragmentManager.getBackStackEntryCount() - 1 - count;
+        final FragmentManager.BackStackEntry backStackEntry = mFragmentManager.getBackStackEntryAt(backstackPositionToGoTo);
+        String tag = backStackEntry.getName();
+        if(!TextUtils.isEmpty(tag))
+            popToTag(tag);
+        else
+            popToId(backStackEntry.getId());
     }
 
     /**
@@ -126,8 +142,12 @@ public class ScreenSwitcher implements FragmentManager.OnBackStackChangedListene
     public void pop(){
         if(mFragmentManager.getBackStackEntryCount() < 1)
             Log.w("ScreenSwitcher", "Fragment backstack is empty; nothing to pop");
-        else
-            mFragmentManager.popBackStack();
+        else {
+            mFragmentManager.popBackStackImmediate();
+            Fragment visible = getVisibleFragment();
+            if(visible instanceof ScreenFragment)
+                notifyFragmentSwitch((ScreenFragment) visible);
+        }
     }
 
     public void clearBackStack() {
