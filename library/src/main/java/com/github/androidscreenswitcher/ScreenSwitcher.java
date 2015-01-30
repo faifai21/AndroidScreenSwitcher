@@ -19,7 +19,7 @@ public class ScreenSwitcher implements FragmentManager.OnBackStackChangedListene
     private List<OnScreenSwitchListener> mOnScreenSwitchListeners = new ArrayList<>();
     private Stack<String> mCheckPoints = new Stack<>();
     private boolean mAddToStack, mClearStack, mIsCheckPoint;
-
+    private String mTag;
     /**
      * To keep our checkpoints up to date, whenever the back stack of fragments changes, we check to see
      * if our checkpoint is still in the stack.
@@ -64,13 +64,18 @@ public class ScreenSwitcher implements FragmentManager.OnBackStackChangedListene
         return this;
     }
 
+    public ScreenSwitcher withTag(String tag){
+        mTag = tag;
+        return this;
+    }
+
     public void commit(ScreenFragment fragment){
         if (mClearStack) {
             clearBackStack();
         }
         FragmentTransaction transaction = mFragmentManager.beginTransaction();
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        final String tag = UUID.randomUUID().toString();
+        final String tag = TextUtils.isEmpty(mTag) ? UUID.randomUUID().toString() : mTag;
 
         if (mAddToStack || mIsCheckPoint) {
             transaction.addToBackStack(tag);
@@ -84,6 +89,7 @@ public class ScreenSwitcher implements FragmentManager.OnBackStackChangedListene
             mCheckPoints.push(tag);
         // reset variables
         mIsCheckPoint = mAddToStack = mClearStack = false;
+        mTag = "";
     }
 
 
@@ -103,16 +109,24 @@ public class ScreenSwitcher implements FragmentManager.OnBackStackChangedListene
         }
     }
 
-    private boolean popToTag(String tag){
+    public boolean popToTag(String tag){
         boolean success = mFragmentManager.popBackStackImmediate(tag, 0);
         newVisibleFragment();
         return success;
     }
 
-    private boolean popToId(int id){
+    public boolean popToId(int id){
         boolean success = mFragmentManager.popBackStackImmediate(id, 0);
         newVisibleFragment();
         return success;
+    }
+
+    public boolean isFragmentOnBackstack(String tag){
+        return mFragmentManager.findFragmentByTag(tag) != null;
+    }
+
+    public boolean isFragmentOnBackstack(int id){
+        return mFragmentManager.findFragmentById(id) != null;
     }
 
     public void clearCheckpoints(){
@@ -153,7 +167,7 @@ public class ScreenSwitcher implements FragmentManager.OnBackStackChangedListene
 
     public void clearBackStack() {
         for (int i = 0; i < mFragmentManager.getBackStackEntryCount(); ++i) {
-            mFragmentManager.popBackStack();
+            mFragmentManager.popBackStackImmediate();
         }
         mCheckPoints.clear();
     }
