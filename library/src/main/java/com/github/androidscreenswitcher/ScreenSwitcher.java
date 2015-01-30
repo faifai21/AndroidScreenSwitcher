@@ -166,10 +166,12 @@ public class ScreenSwitcher implements FragmentManager.OnBackStackChangedListene
     }
 
     public void clearBackStack() {
-        for (int i = 0; i < mFragmentManager.getBackStackEntryCount(); ++i) {
-            mFragmentManager.popBackStackImmediate();
-        }
         mCheckPoints.clear();
+        if(mFragmentManager.getBackStackEntryCount() < 1)
+            return;
+        final FragmentManager.BackStackEntry backStackEntry = mFragmentManager.getBackStackEntryAt(0);
+        int id = backStackEntry.getId();
+        mFragmentManager.popBackStackImmediate(id, FragmentManager.POP_BACK_STACK_INCLUSIVE);
     }
 
     public Fragment getVisibleFragment() {
