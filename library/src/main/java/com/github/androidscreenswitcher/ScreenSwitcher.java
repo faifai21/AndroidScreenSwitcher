@@ -20,6 +20,7 @@ public class ScreenSwitcher implements FragmentManager.OnBackStackChangedListene
     private Stack<String> mCheckPoints = new Stack<>();
     private boolean mAddToStack, mClearStack, mIsCheckPoint;
     private String mTag;
+    private ArrayList<String> mNonBackFragments = new ArrayList<>();
     /**
      * To keep our checkpoints up to date, whenever the back stack of fragments changes, we check to see
      * if our checkpoint is still in the stack.
@@ -70,6 +71,7 @@ public class ScreenSwitcher implements FragmentManager.OnBackStackChangedListene
     }
 
     public void commit(ScreenFragment fragment){
+        Log.e("ScreenSwitcher#commit", "clear: " + mClearStack + ", add to stack: " + mAddToStack + ", checkpoint: " + mIsCheckPoint + ", tag: " + mTag);
         if (mClearStack) {
             clearBackStack();
         }
@@ -82,14 +84,19 @@ public class ScreenSwitcher implements FragmentManager.OnBackStackChangedListene
         }
 
         notifyFragmentSwitch(fragment);
-
-        transaction.replace(mContainerID, fragment, tag);
-        transaction.commit();
+        if(!mAddToStack && !mIsCheckPoint)
+            transaction.add(mContainerID, fragment);
+        else
+            transaction.replace(mContainerID, fragment, tag);
+        final int transactionID = transaction.commit();
+//        if(!mAddToStack && !mIsCheckPoint)
+//            mNonBackFragments.add(fragment.getTag());
         if(mIsCheckPoint)
             mCheckPoints.push(tag);
         // reset variables
         mIsCheckPoint = mAddToStack = mClearStack = false;
         mTag = "";
+        dumpToLog("commit");
     }
 
 
@@ -112,6 +119,7 @@ public class ScreenSwitcher implements FragmentManager.OnBackStackChangedListene
     public boolean popToTag(String tag){
         boolean success = mFragmentManager.popBackStackImmediate(tag, 0);
         newVisibleFragment();
+        dumpToLog("popToTag: " + tag);
         return success;
     }
 
@@ -163,6 +171,28 @@ public class ScreenSwitcher implements FragmentManager.OnBackStackChangedListene
         Fragment visible = getVisibleFragment();
         if(visible != null && visible instanceof ScreenFragment)
             notifyFragmentSwitch((ScreenFragment) visible);
+    }
+
+    private void dumpToLog(String functionName){
+        Log.e("ScreenSwitcher#"+functionName, "Start dump...");
+
+        Log.e("ScreenSwitcher#"+functionName, "*******************Backstack*****************");
+
+        Log.e("ScreenSwitcher#"+functionName, "Backstack count: " + mFragmentManager.getBackStackEntryCount());
+        Log.e("ScreenSwitcher#"+functionName, "****Fragments on backstack****" );
+        ArrayList<Fragment> backstackFrag = new ArrayList<>();
+        for(int i = mFragmentManager.getBackStackEntryCount() - 1; i > -1; i--){
+            final String tag = mFragmentManager.getBackStackEntryAt(i).getName();
+            Fragment frag = mFragmentManager.findFragmentByTag(tag);
+            backstackFrag.add(frag);
+            Log.e("ScreenSwitcher#"+functionName, "Fragment@{" + i + "}: " + frag);
+        }
+        Log.e("ScreenSwitcher#"+functionName, "****Other Fragments****" );
+        for(Fragment frag : mFragmentManager.getFragments()){
+            if(!backstackFrag.contains(frag))
+                Log.e("ScreenSwitcher#"+functionName, "Other Fragment: " + frag);
+        }
+        Log.e("ScreenSwitcher#"+functionName, "****** ****** ***** ***** *** " );
     }
 
     public void clearBackStack() {
