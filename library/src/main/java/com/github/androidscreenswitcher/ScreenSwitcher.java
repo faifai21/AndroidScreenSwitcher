@@ -140,6 +140,10 @@ public class ScreenSwitcher implements FragmentManager.OnBackStackChangedListene
         return mFragmentManager.findFragmentById(id) != null;
     }
 
+    public boolean hasCheckpoints(){
+        return mCheckPoints.size() > 0;
+    }
+
     public void clearCheckpoints(){
         mCheckPoints.clear();
     }
