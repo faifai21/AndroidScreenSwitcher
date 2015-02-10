@@ -141,7 +141,15 @@ public class ScreenSwitcher implements FragmentManager.OnBackStackChangedListene
     }
 
     public boolean popToTag(String tag){
-        boolean success = mFragmentManager.popBackStackImmediate(tag, 0);
+        return popToTag(tag, 0);
+    }
+
+    public boolean popToTagInclusive(String tag){
+        return popToTag(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+    }
+
+    public boolean popToTag(String tag, int flag){
+        boolean success = mFragmentManager.popBackStackImmediate(tag, flag);
         newVisibleFragment();
         if(BuildConfig.DEBUG)
             dumpToLog("popToTag: " + tag);
