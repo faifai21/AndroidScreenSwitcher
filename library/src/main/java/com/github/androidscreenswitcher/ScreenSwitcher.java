@@ -101,6 +101,28 @@ public class ScreenSwitcher implements FragmentManager.OnBackStackChangedListene
             dumpToLog("commit");
     }
 
+    /**
+     * Removes the fragment immediately. Call to executePendingTransactions() makes this a synchronous call,
+     * thereby allowing us to update the title immediately.
+     * @param frag Fragment to remove, if null nothing happens
+     */
+    public void removeImmediate(Fragment frag){
+        if(frag == null)
+            return;
+        mFragmentManager.beginTransaction().remove(frag).commit();
+        mFragmentManager.executePendingTransactions();
+        newVisibleFragment();
+    }
+
+    /**
+     * Removes the fragment asynchronously.
+     * @param frag Fragment to remove, if null nothing happens
+     */
+    public void remove(Fragment frag){
+        if(frag == null)
+            return;
+        mFragmentManager.beginTransaction().remove(frag).commit();
+    }
 
     /**
      * Remove all fragments including the current fragment up until the checkpoint. If no checkpoints,
