@@ -14,6 +14,7 @@ import java.util.UUID;
 
 public class ScreenSwitcher implements FragmentManager.OnBackStackChangedListener{
 
+    private static final boolean DEBUG = false;
     private final FragmentManager mFragmentManager;
     private final int mContainerID;
     private List<OnScreenSwitchListener> mOnScreenSwitchListeners = new ArrayList<>();
@@ -71,7 +72,7 @@ public class ScreenSwitcher implements FragmentManager.OnBackStackChangedListene
     }
 
     public void commit(ScreenFragment fragment){
-        if(BuildConfig.DEBUG)
+        if(DEBUG)
             Log.e("ScreenSwitcher#commit", "clear: " + mClearStack + ", add to stack: " + mAddToStack + ", checkpoint: " + mIsCheckPoint + ", tag: " + mTag);
         if (mClearStack) {
             clearBackStack();
@@ -97,7 +98,7 @@ public class ScreenSwitcher implements FragmentManager.OnBackStackChangedListene
         // reset variables
         mIsCheckPoint = mAddToStack = mClearStack = false;
         mTag = "";
-        if(BuildConfig.DEBUG)
+        if(DEBUG)
             dumpToLog("commit");
     }
 
@@ -151,7 +152,7 @@ public class ScreenSwitcher implements FragmentManager.OnBackStackChangedListene
     public boolean popToTag(String tag, int flag){
         boolean success = mFragmentManager.popBackStackImmediate(tag, flag);
         newVisibleFragment();
-        if(BuildConfig.DEBUG)
+        if(DEBUG)
             dumpToLog("popToTag: " + tag);
         return success;
     }
@@ -202,6 +203,8 @@ public class ScreenSwitcher implements FragmentManager.OnBackStackChangedListene
             mFragmentManager.popBackStackImmediate();
             newVisibleFragment();
         }
+        if(DEBUG)
+            dumpToLog("pop()");
     }
 
     private void newVisibleFragment(){
