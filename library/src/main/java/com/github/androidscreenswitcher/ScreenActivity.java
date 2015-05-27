@@ -3,9 +3,10 @@ package com.github.androidscreenswitcher;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 
-public abstract class ScreenActivity extends ActionBarActivity implements ScreenSwitcher.OnScreenSwitchListener {
+public abstract class ScreenActivity extends AppCompatActivity implements ScreenSwitcher.OnScreenSwitchListener {
 
     private static final String SAVE_STATE_TITLE = "ScreenActivity.SAVE_STATE_TITLE";
 

@@ -4,6 +4,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -41,11 +42,11 @@ public class ScreenSwitcher implements FragmentManager.OnBackStackChangedListene
         public void onScreenSwitched(ScreenFragment screenFragment);
     }
 
-    public ScreenSwitcher(ActionBarActivity activity) {
+    public ScreenSwitcher(AppCompatActivity activity) {
         this(activity, R.id.screens_container);
     }
 
-    public ScreenSwitcher(ActionBarActivity activity, int containerID) {
+    public ScreenSwitcher(AppCompatActivity activity, int containerID) {
         mFragmentManager = activity.getSupportFragmentManager();
         mContainerID = containerID < 0 ? R.id.screens_container : containerID;
         mFragmentManager.addOnBackStackChangedListener(this);
